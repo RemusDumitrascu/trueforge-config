@@ -26,6 +26,16 @@ spec:
   values:
     global:
       stopAll: false
+    credentials:
+        cloudflare:
+            accessKey: ${R2_ACCESSKEY}
+            bucket: code-truecharts-backup
+            encrKey: ${VOLSYNC_ENCRKEY}
+            name: cloudflare
+            path: ""
+            secretKey: ${R2_SECRET}
+            type: s3
+            url: ${R2_URL}
     ingress:
       main:
         enabled: true
@@ -37,10 +47,15 @@ spec:
         hosts:
           - host: code.cloudremuci.eu
     persistence:
-      data:
+      data:      
         enabled: true
-        type: pvc
-        mountPath: /data
-        size: 10Gi
-        accessMode: ReadWriteOnce
-        storageClass: fast-ssd
+        readOnly: false
+        storageClass: ""
+        volsync:
+            - credentials: cloudflare
+              dest:
+                enabled: false
+              name: transcode
+              src:
+                enabled: true
+              type: restic
