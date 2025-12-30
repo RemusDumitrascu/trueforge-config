@@ -36,3 +36,15 @@ spec:
             certificateIssuer: domain-0-le-prod
         hosts:
           - host: code.cloudremuci.eu
+    persistence:
+      data:
+        volsync:
+        - name: data
+          type: restic
+          credentials: minio
+          dest:
+            enabled: true
+          src:
+            enabled: true
+            trigger:
+              schedule: 30 1 * * *
