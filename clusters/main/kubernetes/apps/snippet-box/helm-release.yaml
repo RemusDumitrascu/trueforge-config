@@ -38,13 +38,9 @@ spec:
           - host: code.cloudremuci.eu
     persistence:
       data:
-        volsync:
-        - name: data
-          type: restic
-          credentials: minio
-          dest:
-            enabled: true
-          src:
-            enabled: true
-            trigger:
-              schedule: 30 1 * * *
+        enabled: true
+        type: pvc
+        mountPath: /data
+        size: 10Gi
+        accessMode: ReadWriteOnce
+        storageClass: fast-ssd
