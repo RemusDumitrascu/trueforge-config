@@ -1,0 +1,61 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: snippet-box
+  namespace: snippet-box
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: snippet-box
+      version: 10.13.5
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+      interval: 5m
+  install:
+    createNamespace: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  values:
+    global:
+      stopAll: false
+    credentials:
+        cloudflare:
+            accessKey: ${R2_ACCESSKEY}
+            bucket: code-truecharts-backup
+            encrKey: ${VOLSYNC_ENCRKEY}
+            name: cloudflare
+            path: ""
+            secretKey: ${R2_SECRET}
+            type: s3
+            url: ${R2_URL}
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: external
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+        hosts:
+          - host: code.cloudremuci.eu
+    persistence:
+      data:      
+        enabled: true
+        readOnly: false
+        storageClass: ""
+        volsync:
+            - credentials: cloudflare
+              dest:
+                enabled: false
+              name: data
+              src:
+                enabled: true
+              type: restic
